@@ -1,26 +1,36 @@
+import {memo} from "react";
 import TodoItem from "./TodoItem.jsx";
 
 const TodoList = (props) => {
     const {
         tasks = [],
+        filteredTasks,
         onDeleteTaskButtonClick,
-        onTaskCompleteChange
+        onTaskCompleteChange,
+        firstIncompleteTaskId,
+        firstIncompleteTaskRef
 
     } = props
-    const hasTasks = true
+    const hasTasks = tasks.length > 0
+    const isEmptyFilteredTasks = filteredTasks?.length === 0
 
     if (!hasTasks) {
         return (
-            <div className="todo__empty-message"></div>
+            <div className="todo__empty-message">There are no tasks</div>
         )
+    }
+
+    if (hasTasks && isEmptyFilteredTasks) {
+        return <div className="todo__empty-message">Tasks not found</div>
     }
 
     return (
         <ul className="todo__list">
-            {tasks.map((task) => (
+            {(filteredTasks ?? tasks).map((task) => (
                 <TodoItem
                     className="todo__item"
                     key={task.id}
+                    ref={task.id === firstIncompleteTaskId ? firstIncompleteTaskRef : null}
                     onDeleteTaskButtonClick={onDeleteTaskButtonClick}
                     onTaskCompleteChange={onTaskCompleteChange}
                     {...task}
@@ -30,4 +40,4 @@ const TodoList = (props) => {
         </ul>
     )
 }
-export default TodoList
+export default memo(TodoList)
